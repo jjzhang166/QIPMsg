@@ -1,0 +1,14 @@
+qipmsg (0.9.5-1) unstable; urgency=low
+
+  * BUG FIX: Hostname not display in main window (Ubuntu 8.04)
+  * BUG FIX: No notice sound when receive message (Ubuntu 8.04)
+  * BUG FIX: Newly added group no show in group select menu in main window
+
+ -- Yichi Zhang <zyichi@gmail.com>  Mon, 01 Sep 2008 01:53:17 +0800
+
+qipmsg (0.9.4-1) unstable; urgency=low
+
+  * Initial release
+
+ -- Yichi Zhang <zyichi@gmail.com>  Sun, 31 Aug 2008 16:23:17 +0800
+
