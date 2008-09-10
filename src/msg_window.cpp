@@ -530,6 +530,7 @@ void MsgWindow::cancelTransfer()
             m_recvFileThread->resumeTransfer();
             m_recvFileMap.stopTimer();
             resetConnections();
+            removeRecvOkFile();
             updateFileCount();
             break;
         case QMessageBox::Cancel:

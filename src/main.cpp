@@ -33,7 +33,7 @@
 
 static void createHomeDirectory();
 static void myMessageOutput(QtMsgType type, const char *msg);
-static void checkInitError();
+static void checkTcpServerError();
 
 int main(int argc, char *argv[])
 {
@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
     qInstallMsgHandler(myMessageOutput);
 
     qRegisterMetaType<Msg>("Msg");
+    qRegisterMetaType<QAbstractSocket::SocketError>("QAbstractSocket::SocketError");
 
     // Create application home directory
     createHomeDirectory();
@@ -72,13 +73,13 @@ int main(int argc, char *argv[])
 
     QIpMsg *qipmsg = new QIpMsg;
 
+    checkTcpServerError();
+
     Global::msgThread->start();
     // this make sure thead started
     while (!Global::msgThread->isRunning()) {
         usleep(200000);
     }
-
-    checkInitError();
 
     Global::userManager->broadcastEntry();
 
@@ -136,15 +137,19 @@ static void myMessageOutput(QtMsgType type, const char *msg) {
     }
 }
 
-static void checkInitError()
+static void checkTcpServerError()
 {
     // Check tcp server
     if (!Global::fileServer->isListening()) {
         QString errorString(QObject::tr("Start tcp server error!"));
 
-        QMessageBox::critical(0, QObject::tr("Start qipmsg"), errorString);
+        QMessageBox::critical(0, QObject::tr("Start QIpMsg"),
+                          errorString + ":\n"
+                          + Global::fileServer->errorString());
 
-        qDebug() << "main:" << errorString;
+
+        qDebug() << "main::checkTcpServerError:"
+            << Global::fileServer->errorString();
 
         exit(-1);
     }

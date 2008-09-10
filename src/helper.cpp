@@ -209,15 +209,17 @@ QString Helper::fileCountString(int fileCount)
     return QString();
 }
 
-QString Helper::sizeStringUnit(double size)
+QString Helper::sizeStringUnit(double size, QString sep)
 {
     QString s;
     if (size >= ONE_MB) {
-        s = QString("%1MB")
-            .arg(size/ONE_MB, 0, 'f', 1);
+        s = QString("%1%2MB")
+            .arg(size/ONE_MB, 0, 'f', 1)
+            .arg(sep);
     } else {
-        s = QString("%1KB")
-            .arg(qMax(size/ONE_KB, 1.0), 0, 'f', 0);
+        s = QString("%1%2KB")
+            .arg(qMax(size/ONE_KB, 1.0), 0, 'f', 0)
+            .arg(sep);
     }
 
     return s;

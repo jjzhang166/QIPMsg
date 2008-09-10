@@ -27,6 +27,8 @@
 #include <QDir>
 #include <QTextCodec>
 
+#include <sys/types.h>
+#include <utime.h>
 
 struct TransferFile
 {
@@ -112,7 +114,12 @@ bool RecvFileTransfer::recvFileRegular(RecvFileHandle h)
     }
 
     qint64 bytesReaded = 0;
-    qint64 bytesToRead = h->size() - h->offset();
+    qint64 bytesToRead;
+    if (m_recvFileMap->state() == RecvFileMap::Retry) {
+        bytesToRead = h->size() - h->offset();
+    } else {
+        bytesToRead = h->size();
+    }
     while (bytesReaded < bytesToRead) {
         if (!m_tcpSocket.waitForReadyRead(3000)) {
             m_errorString = m_tcpSocket.errorString();
@@ -142,6 +149,8 @@ bool RecvFileTransfer::recvFileRegular(RecvFileHandle h)
     }
 
     file.close();
+    // set modify time
+    setLastModified(h);
     h->setState(RecvFile::RecvOk);
     m_recvFileMap->addBytesReaded(bytesReaded);
 
@@ -157,6 +166,38 @@ recv_file_error:
     m_recvFileMap->addBytesReaded(bytesReaded);
 
     return false;
+}
+
+void RecvFileTransfer::setLastModified(QString path, QString secondString)
+{
+    if (!secondString.isEmpty()) {
+        bool ok;
+        quint64 secs = secondString.toULongLong(&ok, 16);
+        if (ok) {
+            struct utimbuf buf;
+            // XXX NOTE: we set both access time and modify time to modify time
+            buf.actime = secs;
+            buf.modtime = secs;
+            utime(path.toLocal8Bit(), &buf);
+        }
+    }
+}
+
+void RecvFileTransfer::setLastModified(RecvFileHandle h)
+{
+    QString path = m_recvFileMap->saveFilePath() + "/" + h->name();
+    QString s = h->attrMap().value(IPMSG_FILE_MTIME);
+    if (!s.isEmpty()) {
+        bool ok;
+        quint64 secs = s.toULongLong(&ok, 16);
+        if (ok) {
+            struct utimbuf buf;
+            // XXX NOTE: we set both access time and modify time to modify time
+            buf.actime = secs;
+            buf.modtime = secs;
+            utime(path.toLocal8Bit(), &buf);
+        }
+    }
 }
 
 bool RecvFileTransfer::recvFileDir(RecvFileHandle h)
@@ -177,6 +218,16 @@ bool RecvFileTransfer::recvFileDir(RecvFileHandle h)
     QFile file;
     struct TransferFile transferFile;
     forever {
+        if (isStopTransfer) {
+            m_lock.lock();
+            m_cond.wait(&m_lock);
+            m_lock.unlock();
+        }
+        if (isAbortTransfer) {
+            h->setState(RecvFile::RecvFail);
+            return false;
+        }
+
         if (!m_tcpSocket.waitForReadyRead(3000)) {
             m_errorString = m_tcpSocket.errorString();
             return false;
@@ -202,6 +253,8 @@ bool RecvFileTransfer::recvFileDir(RecvFileHandle h)
                 m_recvFileMap->incrTotalRegularFileCount();
                 h->incrRegularFileCount();
                 file.close();   // successfully get file
+                setLastModified(dir.absolutePath() + "/" + transferFile.name,
+                                transferFile.extendAttr.value(IPMSG_FILE_MTIME));
             }
         }
 
@@ -212,7 +265,7 @@ bool RecvFileTransfer::recvFileDir(RecvFileHandle h)
 
             if (transferFile.type == IPMSG_FILE_REGULAR) {
                 bytesToWrite = transferFile.size;
-                file.setFileName(dir.path() + "/" + transferFile.name);
+                file.setFileName(dir.absolutePath() + "/" + transferFile.name);
                 if (!file.open(QIODevice::WriteOnly)) {
                     m_errorString = "RecvFileTransfer::recvFileDir:"
                         + file.errorString();
@@ -227,6 +280,9 @@ bool RecvFileTransfer::recvFileDir(RecvFileHandle h)
                     m_recvFileMap->incrTotalRegularFileCount();
                     h->incrRegularFileCount();
                     file.close();   // successfully get file
+                    setLastModified(dir.absolutePath() + "/"
+                                    + transferFile.name,
+                                    transferFile.extendAttr.value(IPMSG_FILE_MTIME));
                 } else {
                     isRecvContentData = true;
                     saveData(recvBlock, file);
@@ -245,6 +301,9 @@ bool RecvFileTransfer::recvFileDir(RecvFileHandle h)
                     return false;
                 }
                 dir.cd(transferFile.name);
+                // set folder modify name
+                setLastModified(dir.absolutePath(),
+                                transferFile.extendAttr.value(IPMSG_FILE_MTIME));
             } else if (transferFile.type == IPMSG_FILE_RETPARENT) {
                 if (!dir.cdUp()) {
                     m_errorString
@@ -254,9 +313,9 @@ bool RecvFileTransfer::recvFileDir(RecvFileHandle h)
 
                 QString path;
                 if (!dir.isRoot()) {
-                    path = dir.path() + "/";
+                    path = dir.absolutePath() + "/";
                 } else {
-                    path = dir.path();
+                    path = dir.absolutePath();
                 }
                 if (path == m_recvFileMap->saveFilePath()) {
                     h->setState(RecvFile::RecvOk);
@@ -268,15 +327,6 @@ bool RecvFileTransfer::recvFileDir(RecvFileHandle h)
                     = "RecvFileTransfer::recvFileDir: unsupported file type";
                 return false;
             }
-        }
-
-        if (isStopTransfer) {
-            m_cond.wait(&m_lock);
-        }
-
-        if (isAbortTransfer) {
-            h->setState(RecvFile::RecvFail);
-            return false;
         }
     }
 }
@@ -297,9 +347,10 @@ bool RecvFileTransfer::parseHeader(QByteArray &recvBlock,
 
     QList<QByteArray> list = header.split(':');
 
-#define TRANSFERFILE_NAME_POS       1
-#define TRANSFERFILE_SIZE_POS       2
-#define TRANSFERFILE_TYPE_POS       3
+#define TRANSFERFILE_NAME_POS           1
+#define TRANSFERFILE_SIZE_POS           2
+#define TRANSFERFILE_TYPE_POS           3
+#define TRANSFERFILE_ATTR_BEGIN_POS     4
 
     // XXX NOTE: canParseHeader() make sure we have enough items in list,
     // so we do not need to check size of list before call list.at()
@@ -316,7 +367,17 @@ bool RecvFileTransfer::parseHeader(QByteArray &recvBlock,
         return false;
     }
 
-    // XXX TODO: parse attribute list.
+    // Extended file attribution like mtime, atime...
+    for (int i = TRANSFERFILE_ATTR_BEGIN_POS; i < list.size(); ++i) {
+        QString s = list.at(i);
+        QStringList l = s.split(QChar('='));
+        if (l.size() == 2) {
+            int i = l.at(0).toInt(&ok, 16);
+            if (ok) {
+                transferFile.extendAttr.insert(i, l.at(1));
+            }
+        }
+    }
 
     recvBlock.remove(0, headerSize);
 

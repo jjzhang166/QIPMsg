@@ -36,10 +36,10 @@ MsgServer::MsgServer(QObject *parent)
 
     connect(&m_udpSocket, SIGNAL(readyRead()),
             this, SLOT(readPacket()));
-    connect(&m_udpSocket, SIGNAL(error(QAbstractSocket::SocketError)),
-            this, SLOT(socketEerror()));
     connect(this, SIGNAL(releaseFile(QString)),
             Global::sendFileManager, SLOT(removeTransferLocked(QString)));
+    connect(&m_udpSocket, SIGNAL(error(QAbstractSocket::SocketError)),
+            this, SLOT(socketEerror(QAbstractSocket::SocketError)));
 }
 
 void MsgServer::start()
@@ -341,8 +341,8 @@ bool MsgServer::isSupportedCommand(QByteArray &datagram) const
     return isSupport;
 }
 
-void MsgServer::socketEerror()
+void MsgServer::socketEerror(QAbstractSocket::SocketError errorCode)
 {
-    emit error(m_udpSocket.errorString());
+    emit error(errorCode, m_udpSocket.errorString());
 }
 

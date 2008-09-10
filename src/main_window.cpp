@@ -47,8 +47,6 @@ MainWindow::MainWindow(QString text, QString ip,
 
     setAcceptDrops(true);
 
-    m_sendFileMap = new SendFileMap;
-
     setSourceModel();
 
     createSendLayout();
@@ -146,6 +144,7 @@ void MainWindow::createInputWidget()
             this, SLOT(showSendFileList()));
 
     inputEdit = new QTextEdit;
+    inputEdit->setAcceptDrops(false);
     inputEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     inputEdit->setAcceptRichText(false);
     inputEdit->setText(m_initText);
@@ -336,6 +335,10 @@ void MainWindow::sendMessage()
         additionalInfo.append(QChar('\0'));
 
         if (hasSendFile()) {
+            // we need to realloc memory when send file to mulitple user.
+            // we don't delete this, sendFileManager take care of it.
+            m_sendFileMap = new SendFileMap;
+
             flags |= IPMSG_FILEATTACHOPT;
 
             QStringList pathList = m_sendFileModel.pathList();
@@ -359,6 +362,7 @@ void MainWindow::sendMessage()
             Global::sendFileManager
                 ->addTransferLocked(m_sendFileMap->packetNoString(),
                          m_sendFileMap);
+
         }
 
         Global::msgThread->addSendMsg(Msg(sendMsg));

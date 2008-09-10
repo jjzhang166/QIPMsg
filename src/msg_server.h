@@ -39,13 +39,13 @@ signals:
     void newUserMsg(Msg msg);
     void newExitMsg(Msg msg);
     void newMsg(Msg msg);
-    void error(QString errorString);
+    void error(QAbstractSocket::SocketError, QString errorString);
     void releaseFile(QString additionalInfo);
     void msgReaded(QString name);
 
 public slots:
     void processSendMsg();
-    void socketEerror();
+    void socketEerror(QAbstractSocket::SocketError);
 
 private slots:
     void readPacket();

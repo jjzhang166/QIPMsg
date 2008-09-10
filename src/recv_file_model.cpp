@@ -42,6 +42,9 @@ void RecvFileModel::addRow(const RecvFile &recvFile)
                      recvFile.name());
     m_model->setData(m_model->index(row, RECV_FILE_VIEW_SIZE_POS),
                      recvFile.sizeString());
+
+    QStandardItem *item = m_model->item(row, RECV_FILE_VIEW_SIZE_POS);
+    item->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 }
 
 void RecvFileModel::removeRow(int id)

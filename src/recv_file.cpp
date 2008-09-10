@@ -41,7 +41,10 @@ RecvFile::RecvFile(QString ip, QString packetNoString, QString info)
             QString s = list.at(i);
             QStringList l = s.split(QChar('='));
             if (l.size() == 2) {
-                attrMap.insert(l.at(0), l.at(1));
+                int i = l.at(0).toInt(&ok, 16);
+                if (ok) {
+                    m_attrMap.insert(i, l.at(1));
+                }
             }
         }
     }
@@ -57,7 +60,7 @@ QString RecvFile::sizeString() const
         return QString("Folder");
     }
 
-    return QString("%1").arg(m_size);
+    return QString("%1").arg(Helper::sizeStringUnit(m_size, " "));
 }
 
 QString RecvFile::transferStatsInfo() const

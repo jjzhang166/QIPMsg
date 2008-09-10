@@ -64,8 +64,12 @@ void SendFileWindow::createSendFileView(SendFileModel *sendFileModel)
     sendFileView->setSelectionBehavior(QAbstractItemView::SelectRows);
     sendFileView->setTabKeyNavigation(false);
 
+    // no delegate needed, implement with QStandardItem->setTextAlignment
+    // in send_file_model.cpp
+#if 0
     sendFileView->setItemDelegateForColumn(SEND_FILE_VIEW_SIZE_POS,
             new SizeColumnDelegate(this));
+#endif
     sendFileView->hideColumn(SEND_FILE_VIEW_PATH_POS);
 
     QItemSelectionModel *selectionModel = new QItemSelectionModel(sendFileView->model());
@@ -74,11 +78,11 @@ void SendFileWindow::createSendFileView(SendFileModel *sendFileModel)
     QFontMetrics fm = fontMetrics();
     QHeaderView *header = sendFileView->horizontalHeader();
     header->resizeSection(SEND_FILE_VIEW_NAME_POS,
-            fm.width(tr("normal-length-of-a-file-name.file")));
+            fm.width(tr("normal-length-of-a-file-name")));
     header->resizeSection(SEND_FILE_VIEW_SIZE_POS,
-            qMax(fm.width(tr("Size")), fm.width(" 1000000 KB ")));
+            qMax(fm.width(tr("Size")), fm.width(" 10000 KB ")));
     header->resizeSection(SEND_FILE_VIEW_LOCATION_POS,
-            fm.width(tr("/normal/path/of/a/directory/normal-length-of-a-file-name.file")));
+            fm.width(tr("/normal/path/of/a/directory/")));
 }
 
 void SendFileWindow::createButtonLayout()

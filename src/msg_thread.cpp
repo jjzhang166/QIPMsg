@@ -52,8 +52,8 @@ void MsgThread::run()
     connect(m_msgServer, SIGNAL(newExitMsg(Msg)),
             Global::userManager, SLOT(newExitMsg(Msg)));
 
-    connect(m_msgServer, SIGNAL(error(QString)),
-            this, SLOT(exitOnError(QString)));
+    connect(m_msgServer, SIGNAL(error(QAbstractSocket::SocketError, QString)),
+            this, SLOT(handleError(QAbstractSocket::SocketError, QString)));
 
     m_msgServer->start();
 
@@ -79,17 +79,19 @@ void MsgThread::removeSendMsgNotLock(QString packetNoString)
     m_sendMsgMap.remove(packetNoString);
 }
 
-void MsgThread::exitOnError(QString s)
+void MsgThread::handleError(QAbstractSocket::SocketError errorCode, QString s)
 {
-    qDebug() << "MsgThread::exitOnError";
+    qDebug() << "MsgThread::handleError";
 
-    QString errorString(QObject::tr("Start udp server error"));
+    QString errorString(QObject::tr("udp server error"));
 
-    QMessageBox::critical(0, QObject::tr("Start qipmsg"),
+    QMessageBox::critical(0, QObject::tr("QIpMsg"),
                           errorString + ":\n" + s + ".");
 
-    qDebug() << "MsgThread::exitOnError:" << s;
+    qDebug() << "MsgThread::handleError:" << s;
 
-    ::exit(-1);
+    if (errorCode == QAbstractSocket::AddressInUseError) {
+        ::exit(-1);
+    }
 }
 

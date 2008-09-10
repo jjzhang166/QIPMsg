@@ -22,6 +22,7 @@
 #include <QStringList>
 #include <QList>
 #include <QDateTime>
+#include <QtDebug>
 
 SendFileMap::SendFileMap(QObject *parent)
     : QObject(parent), m_transferedCount(0), m_state(NotTransfer)
@@ -53,13 +54,19 @@ QString SendFileMap::packetString() const
         s.append(QString("%1").arg(h->size(), 2, 16, QChar('0')));
         s.append(COMMAND_SEPERATOR);
         s.append(QString("%1").arg(h->lastModified().toTime_t(),
-                    2, 16));
+                    0, 16));
         s.append(COMMAND_SEPERATOR);
         if (h->isFile()) {
             s.append(QString("%1").arg(IPMSG_FILE_REGULAR));
         } else if (h->isDir()) {
             s.append(QString("%1").arg(IPMSG_FILE_DIR));
         }
+        s.append(COMMAND_SEPERATOR);
+        s.append(QString("%1=").arg(IPMSG_FILE_MTIME, 0, 16));
+        s.append(QString("%1").arg(h->lastModified().toTime_t(), 0, 16));
+        s.append(COMMAND_SEPERATOR);
+        s.append(QString("%1=").arg(IPMSG_FILE_CREATETIME, 0, 16));
+        s.append(QString("%1").arg(h->created().toTime_t(), 0, 16));
         s.append(COMMAND_SEPERATOR);
         s.append(FILELIST_SEPARATOR);
 

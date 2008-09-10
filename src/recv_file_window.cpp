@@ -176,8 +176,12 @@ void RecvFileWindow::createRecvFileView()
     recvFileView->setSelectionBehavior(QAbstractItemView::SelectRows);
     recvFileView->setTabKeyNavigation(false);
 
+    // no delegate needed, implement with QStandardItem->setTextAlignment
+    // in recv_file_model.cpp
+#if 0
     recvFileView->setItemDelegateForColumn(RECV_FILE_VIEW_SIZE_POS,
             new SizeColumnDelegate(this));
+#endif
 
     recvFileView->hideColumn(RECV_FILE_VIEW_ID_POS);
 

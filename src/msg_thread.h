@@ -40,10 +40,8 @@ public:
     void removeSendMsg(QString packetNo);
     void removeSendMsgNotLock(QString packetNo);
 
-    bool isBounded() const;
-
 private slots:
-    void exitOnError(QString s);
+    void handleError(QAbstractSocket::SocketError errorCode, QString s);
 
 signals:
     void newMsg(Msg msg);

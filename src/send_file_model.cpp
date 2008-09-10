@@ -16,6 +16,7 @@
 
 #include "send_file_model.h"
 #include "constants.h"
+#include "helper.h"
 
 #include <QFileInfo>
 
@@ -27,6 +28,10 @@ void SendFileModel::createModel()
 
     m_model = new QStandardItemModel(0, labels.size(), this);
     m_model->setHorizontalHeaderLabels(labels);
+
+    QStandardItem *item
+        = m_model->horizontalHeaderItem(SEND_FILE_VIEW_LOCATION_POS);
+    item->setTextAlignment(Qt::AlignLeft);
 }
 
 void SendFileModel::addFile(const QString &path)
@@ -60,6 +65,9 @@ void SendFileModel::addRow(const QStringList &items)
         m_model->setData(m_model->index(row, column), s);
         ++column;
     }
+
+    QStandardItem *item = m_model->item(row, SEND_FILE_VIEW_SIZE_POS);
+    item->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 }
 
 bool SendFileModel::contains(const QString &path) const
@@ -119,7 +127,7 @@ QString SendFileModel::sizeString(QFileInfo &fileInfo) const
     if (fileInfo.isDir()) {
         s = "Folder";
     } else {
-        s = QString("%1").arg(fileInfo.size());
+        s = QString("%1").arg(Helper::sizeStringUnit(fileInfo.size(), " "));
     }
 
     return s;

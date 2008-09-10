@@ -58,6 +58,8 @@ private:
     bool canParseHeader(QByteArray &recvBlock);
     bool parseHeader(QByteArray &recvBlock,
                      struct TransferFile &transferFile);
+    void setLastModified(QString path, QString secondString);
+    void setLastModified(RecvFileHandle h);
 
     QMutex m_lock;
     QWaitCondition m_cond;

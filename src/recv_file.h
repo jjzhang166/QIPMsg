@@ -77,6 +77,8 @@ public:
 
     void resetStats();
 
+    const QMap<int, QString>& attrMap() { return m_attrMap; }
+
 private:
     double transferRateAvg() const;
     double percent() const;
@@ -87,7 +89,7 @@ private:
     QString m_name;
     qint64 m_size;
     int m_type;
-    QMap<QString, QString> attrMap;
+    QMap<int, QString> m_attrMap;
 
     qint64 m_offset;
     qint64 m_bytesReaded;

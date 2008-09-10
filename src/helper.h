@@ -53,7 +53,7 @@ public:
     static QString openUrlProgram();
 
     static QString fileCountString(int fileCount);
-    static QString sizeStringUnit(double size);
+    static QString sizeStringUnit(double size = 0.0, QString sep = "");
     static QString secondStringUnit(int second);
 
 private:

@@ -228,10 +228,6 @@ bool ServeSocket::tcpWriteBlock(QByteArray &block)
         qint32 bytesWrited = m_tcpSocket.write(block);
         forever {
             if (!m_tcpSocket.waitForBytesWritten(1000)) {
-#if 1
-                qDebug() << "xxxxxxxxxxxxxxxxxxxxxxx:"
-                    << m_tcpSocket.errorString();
-#endif
                 if (m_tcpSocket.state() == QAbstractSocket::ConnectedState) {
                     // XXX NOTE: a time out, can be occured if client stop
                     // transfer

@@ -1,5 +1,5 @@
 %define name    qipmsg
-%define version 0.9.5
+%define version 0.9.6
 %define dist .fc9
 %define release 1
 
