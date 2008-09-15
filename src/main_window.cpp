@@ -531,6 +531,7 @@ void MainWindow::refreshUserList()
 {
     Global::userManager->m_model
         ->removeRows(0, Global::userManager->m_model->rowCount());
+    updateUserCount(0);
 
     Global::userManager->broadcastEntry();
 }
