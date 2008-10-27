@@ -122,6 +122,23 @@ void MainWindow::createPeerWidget()
     userView->setTabKeyNavigation(false);
     userView->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
+    QFontMetrics fm = fontMetrics();
+    QHeaderView *hHeader = userView->horizontalHeader();
+    hHeader->resizeSection(USER_VIEW_IP_COLUMN,
+            fm.width(tr(" 255.255.255.255 ")));
+
+    QHeaderView *vHeader = userView->verticalHeader();
+    vHeader->setDefaultSectionSize(fm.height());
+    vHeader->setStyleSheet(
+                           "QHeaderView::section {"
+                           "padding-bottom: 0px;"
+                           "padding-top: 0px;"
+                           "padding-left: 0px;"
+                           "padding-right: 1px;"
+                           "margin: 0px;"
+                           "}"
+                          );
+
     refreshButton = new QPushButton(tr("&Refresh"));
     userCountLabel = new QLabel(tr("User Count\n%1")
             .arg(Global::userManager->m_model->rowCount()));

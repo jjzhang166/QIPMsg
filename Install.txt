@@ -18,7 +18,7 @@ Run command:
 
 You'll find the rpm package under /usr/src/redhat/RPMS/i386/
 
-1) How to make a deb package for Ubuntu
+2) How to make a deb package for Ubuntu
 ---------------------------------------
 
 	$ mkdir qipmsg/
@@ -30,7 +30,15 @@ You'll find the rpm package under /usr/src/redhat/RPMS/i386/
 
 You'll found the deb package in the directory above the current directory.
 
-3) Generic compilation
+3) Compile qipmsg on opensuse
+-----------------------------
+You need first install libqt4-devel, libqt4 package. After this, Just run:
+
+	$ make QMAKE=qmake LRELEASE=lrelease
+	$ make install
+
+
+4) Generic compilation
 ----------------------
 You need at least Qt 4.3 to compile qipmsg. Older version not tested.
 
@@ -61,7 +69,7 @@ or
 make QMAKE=/usr/share/qt4/bin/qmake
 
 
-4) Changing installation path
+5) Changing installation path
 -----------------------------
 By default qipmsg will be installed in /usr. You can change it by
 using PREFIX and DESTDIR.

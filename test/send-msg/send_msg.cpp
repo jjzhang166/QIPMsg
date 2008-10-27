@@ -52,14 +52,14 @@ void SendMsg::send()
 
     int cnt = 0;
     forever {
-        if (m_udpSocket.writeDatagram(datagram, QHostAddress("192.168.1.105"), 2425) == -1) {
+        if (m_udpSocket.writeDatagram(datagram, QHostAddress("192.168.1.104"), 2425) == -1) {
             qDebug() << "SendMsg::send: send datagram failed";
         }
 
         usleep(200000);
 
         ++cnt;
-        if (cnt == 40) {
+        if (cnt == 1) {
             break;
         }
     }
