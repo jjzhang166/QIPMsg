@@ -194,7 +194,11 @@ QString Helper::soundPath()
 
 QString Helper::openUrlProgram()
 {
+#if 0
     return appPath() + "/qipmsg-xdg-open";
+#else
+    return "xdg-open";
+#endif
 }
 
 QString Helper::fileCountString(int fileCount)

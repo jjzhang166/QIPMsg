@@ -317,7 +317,7 @@ bool RecvFileTransfer::recvFileDir(RecvFileHandle h)
                 } else {
                     path = dir.absolutePath();
                 }
-                if (path == m_recvFileMap->saveFilePath()) {
+                if (QDir::cleanPath(path) == QDir::cleanPath(m_recvFileMap->saveFilePath())) {
                     h->setState(RecvFile::RecvOk);
                     m_recvFileMap->incrDirCount();
                     return true;

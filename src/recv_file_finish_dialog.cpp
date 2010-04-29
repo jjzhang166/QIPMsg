@@ -106,8 +106,8 @@ void RecvFileFinishDialog::openDir()
     QString filePath;
     if (m_recvFileMap->regularFileCount() < 1
         && m_recvFileMap->dirCount() == 1) {
-        filePath = m_recvFileMap->saveFilePath()
-            + m_recvFileMap->currentFile()->name();
+        filePath = m_recvFileMap->saveFilePath() + "/" +
+            m_recvFileMap->currentFile()->name();
     } else {
         filePath = m_recvFileMap->saveFilePath();
     }
