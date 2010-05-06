@@ -28,6 +28,7 @@
 #include <QTextCodec>
 #include <QNetworkInterface>
 #include <QAbstractSocket>
+#include <QSet>
 
 MsgServer::MsgServer(QObject *parent)
     : QObject(parent)
@@ -270,11 +271,28 @@ void MsgServer::updateAddresses()
             }
         }
     }
+
+    // Add broadcast address specified by user.
+    foreach(QString s, Global::preferences->userSpecifiedBroadcastIpList) {
+        QHostAddress h(s);
+        if (h != QHostAddress::Null &&
+            h != QHostAddress::LocalHost &&
+            h != QHostAddress::LocalHostIPv6) {
+            m_broadcastAddresses << h;
+        }
+    }
+
+    // NOTE: Just to remove duplicate entries.
+    QSet<QHostAddress> set = m_broadcastAddresses.toSet();
+    m_broadcastAddresses.clear();
+    m_broadcastAddresses = set.toList();
 }
 
 void MsgServer::broadcastUserMsg(Msg &msg)
 {
     qDebug() << "MsgServer::broadcastUserMsg";
+
+    updateAddresses();
 
     QByteArray datagram = Global::transferCodec->codec()
         ->fromUnicode(msg->packet());

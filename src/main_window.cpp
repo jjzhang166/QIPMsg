@@ -125,10 +125,10 @@ void MainWindow::createPeerWidget()
     QFontMetrics fm = fontMetrics();
     QHeaderView *hHeader = userView->horizontalHeader();
     hHeader->resizeSection(USER_VIEW_IP_COLUMN,
-            fm.width(tr(" 255.255.255.255 ")));
+            fm.width(" 255.255.255.255 "));
 
     QHeaderView *vHeader = userView->verticalHeader();
-    vHeader->setDefaultSectionSize(fm.height());
+    vHeader->setDefaultSectionSize(fm.height() + 6);
     vHeader->setStyleSheet(
                            "QHeaderView::section {"
                            "padding-bottom: 0px;"

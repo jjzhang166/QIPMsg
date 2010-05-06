@@ -135,6 +135,7 @@ private:
     QDialogButtonBox *buttonBox;
 };
 
+class QListWidget;
 class SetupWindow : public QWidget
 {
     Q_OBJECT
@@ -150,12 +151,15 @@ private slots:
     void savePreferences();
     void applyPreferences();
     void detailSetup();
+    void AddBroadcast();
+    void DelBroadcast();
 
 private:
     void createNicknameGroupBox();
     void createGroupNameGroupBox();
     void createSendRecvSettingsGroupBox();
     void createMiscSettingGroupBox();
+    void createBroadcastGroupBox();
 
     void createButtonLayout();
 
@@ -165,6 +169,7 @@ private:
     QGroupBox *groupNameGroupBox;
     QGroupBox *sendReceiveSettingsGroupBox;
     QGroupBox *miscSettingGroupBox;
+    QGroupBox *broadcastGroupBox;
 
     QPushButton *okButton;
     QPushButton *applyButton;
@@ -182,6 +187,9 @@ private:
     QPushButton *detailSetupButton;
     QPushButton *urlLinkSetupButton;
     QPushButton *passwordSetupButton;
+
+    QListWidget *broadcast_list_widget_;
+    QLineEdit* line_edit_;
 };
 
 #endif // !SETUP_WINDOW_H

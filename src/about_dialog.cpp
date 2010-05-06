@@ -68,7 +68,7 @@ InfoTab::InfoTab(QWidget *parent)
     info->setFrameShadow(QFrame::Plain);
 
     info->setText(
-            "<b>QIpMsg</b> &copy; 2007-2008 Yichi Zhang &lt;zyichi@gmail.com&gt;<br><br>"
+            "<b>QIpMsg</b> &copy; 2007-2010 Yichi Zhang &lt;zyichi@gmail.com&gt;<br><br>"
             "<b>" + tr("Version: %1").arg(VERSION) + "</b>" +
             "<br>" +
             tr("Compiled with Qt %1").arg(QT_VERSION_STR) + "<br><br>" +

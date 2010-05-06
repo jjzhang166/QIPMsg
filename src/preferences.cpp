@@ -49,6 +49,7 @@ void Preferences::reset()
 
     userSearchHistory = "";
     userSearchList.clear();
+    userSpecifiedBroadcastIpList.clear();
 
     displayLevel = "";
 
@@ -140,6 +141,14 @@ void Preferences::load()
     userSearchList = userSearchHistory.split(QChar('\r'));
     set->endGroup();
 
+    set->beginGroup("BroadcastIp");
+    userSpecifiedBroadcastIp =
+        set->value("userSpecifiedBroadcastIp",
+                   userSpecifiedBroadcastIp).toString();
+    userSpecifiedBroadcastIpList =
+        userSpecifiedBroadcastIp.split(QChar('\r'), QString::SkipEmptyParts);
+    set->endGroup();
+
     set->beginGroup("Transfer");
     transferCodecName
         = set->value("transferCodecName", transferCodecName).toString();
@@ -196,6 +205,11 @@ void Preferences::save()
 
     set->beginGroup("UserSearch");
     set->setValue("userSearchHistory", userSearchList.join("\r"));
+    set->endGroup();
+
+    set->beginGroup("BroadcastIp");
+    set->setValue("userSpecifiedBroadcastIp",
+                  userSpecifiedBroadcastIpList.join("\r"));
     set->endGroup();
 
     set->beginGroup("Transfer");

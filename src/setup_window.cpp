@@ -346,7 +346,7 @@ SetupWindow::SetupWindow(QWidget *parent)
     createNicknameGroupBox();
     createGroupNameGroupBox();
     createSendRecvSettingsGroupBox();
-    // createBroadcastGroupBox();
+    createBroadcastGroupBox();
 
     createButtonLayout();
 
@@ -358,7 +358,8 @@ SetupWindow::SetupWindow(QWidget *parent)
     mainLayout->addWidget(groupNameGroupBox, 0, 1);
     mainLayout->addWidget(sendReceiveSettingsGroupBox, 1, 0, 1, 1);
     mainLayout->addWidget(miscSettingGroupBox, 1, 1);
-    mainLayout->addLayout(buttonsLayout, 2, 0, 1, 2);
+    mainLayout->addWidget(broadcastGroupBox, 2, 0, 1, 2);
+    mainLayout->addLayout(buttonsLayout, 3, 0, 1, 2);
 
     createConnections();
 
@@ -444,6 +445,46 @@ void SetupWindow::createSendRecvSettingsGroupBox()
     vbox->addWidget(quoteMsg);
 
     sendReceiveSettingsGroupBox->setLayout(vbox);
+}
+
+void SetupWindow::createBroadcastGroupBox()
+{
+    broadcastGroupBox = new QGroupBox(tr("None Local Broadcast Address Settings"));
+
+    broadcast_list_widget_ = new QListWidget;
+    broadcast_list_widget_->setSelectionMode(
+            QAbstractItemView::ExtendedSelection);
+    foreach(QString s, Global::preferences->userSpecifiedBroadcastIpList) {
+        QListWidgetItem* item = new QListWidgetItem(s, broadcast_list_widget_);
+        broadcast_list_widget_->insertItem(0, item);
+    }
+
+    QLabel* label = new QLabel(tr("Add Broadcast Address"));
+    line_edit_ = new QLineEdit;
+    QCheckBox* dial_up = new QCheckBox(tr("dial up connection"));
+    dial_up->setEnabled(false);
+
+    QPushButton* add_button = new QPushButton(">>");
+    QPushButton* del_button = new QPushButton("<<");
+    QFontMetrics fm = fontMetrics();
+    add_button->setFixedSize(fm.width(">>") + 6, fm.width(">>") + 2);
+    del_button->setFixedSize(fm.width(">>") + 6, fm.width(">>") + 2);
+    connect(add_button, SIGNAL(clicked()), this, SLOT(AddBroadcast()));
+    connect(del_button, SIGNAL(clicked()), this, SLOT(DelBroadcast()));
+    QVBoxLayout* button_layout = new QVBoxLayout;
+    button_layout->addSpacing(20);
+    button_layout->addWidget(add_button);
+    button_layout->addWidget(del_button);
+    button_layout->addSpacing(20);
+
+    QGridLayout *grid_layout = new QGridLayout();
+    grid_layout->addWidget(label, 0, 0, 1, 1);
+    grid_layout->addWidget(line_edit_, 1, 0, 1, 1);
+    grid_layout->addWidget(dial_up, 2, 0, 1, 1);
+    grid_layout->addLayout(button_layout, 0, 1, 3, 1);
+    grid_layout->addWidget(broadcast_list_widget_, 0, 2, 3, 1);
+
+    broadcastGroupBox->setLayout(grid_layout);
 }
 
 void SetupWindow::createButtonLayout()
@@ -536,6 +577,32 @@ void SetupWindow::detailSetup()
 {
     DetailSetupDialog *dialog = new DetailSetupDialog(this);
     dialog->show();
+}
+
+void SetupWindow::AddBroadcast()
+{
+    QString s = line_edit_->text();
+    if (!Global::preferences->userSpecifiedBroadcastIpList.contains(s)) {
+        // NOTE: Just use QHostAddress to verify user input is legal ip
+        // address.
+        QHostAddress* address = new QHostAddress;
+        if (address->setAddress(s)) {
+            Global::preferences->userSpecifiedBroadcastIpList.prepend(s);
+            QListWidgetItem* item = new QListWidgetItem(s, broadcast_list_widget_);
+            broadcast_list_widget_->insertItem(0, item);
+        }
+    }
+}
+
+void SetupWindow::DelBroadcast()
+{
+    foreach(QListWidgetItem* item, broadcast_list_widget_->selectedItems()) {
+        int row = broadcast_list_widget_->row(item);
+        broadcast_list_widget_->takeItem(row);
+        line_edit_->setText(item->text());
+        Global::preferences->userSpecifiedBroadcastIpList.removeOne(
+                item->text());
+    }
 }
 
 QSize SetupWindow::sizeHint() const

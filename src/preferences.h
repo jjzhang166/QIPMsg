@@ -69,6 +69,9 @@ public:
     bool isSearchAllColumns;
 
     QString transferCodecName;
+
+    QStringList userSpecifiedBroadcastIpList;
+    QString userSpecifiedBroadcastIp;
 };
 
 #endif // !PREFERENCES_H
