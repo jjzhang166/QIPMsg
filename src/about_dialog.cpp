@@ -115,7 +115,10 @@ QString ContributorTab::getContributor() const
 {
     return tr("Some people have helped with their contributions:")
         + "<ul>"
-        + contr("Yichi Zhang &lt;zyichi@gmail.com&gt;", tr("Original Author"))
+        + contr("Yichi Zhang &lt;zyichi@gmail.com&gt;", tr("Original Author, Packager"))
+        + "</ul>"
+        + "<ul>"
+        + contr("robinlee.sysu &lt;robinlee.sysu@gmail.com&gt;", tr("Packager"))
         + "</ul>";
 }
 
