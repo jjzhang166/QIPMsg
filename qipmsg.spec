@@ -23,8 +23,8 @@
 
 Name:           %{name}
 Summary:        Chat and transfer file over local network
-License:        GPL
-Group:          Applications/Network
+License:        GPLv2
+Group:          Applications/Communications
 URL:            http://code.google.com/p/qipmsg/
 Version:        %{version}
 Release:        %{release}%{dist}
@@ -36,8 +36,9 @@ Distribution:   %{distr}
 BuildRoot:      %{_tmppath}/%{name}-buildroot
 Autoreqprov:    On
 
-BuildRequires: desktop-file-utils
-BuildRequires: qt4-devel
+BuildRequires:  qt4-devel
+BuildRequires:  alsa-lib-devel
+Requires:       xdg-utils
 
 %description
 qipmsg is a IP Messenger clone for linux platforms. Visit
@@ -57,26 +58,23 @@ sed -i '/cd src && $(QMAKE) $(QMAKE_OPTS) && $(DEFS) make/s!$! %{?_smp_mflags}!'
 make PREFIX=/usr QMAKE=%{qmake} LRELEASE=%{lrelease}
 
 %install
+rm -rf %{buildroot}
 make PREFIX=/usr DESTDIR=%{?buildroot:%{buildroot}} install
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %post
-touch --no-create %{_datadir}/icons/hicolor
-touch --no-create %{_datadir}/pixmaps
+touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 if [ -x %{_bindir}/gtk-update-icon-cache ]; then
-  %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
+  %{_bindir}/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 fi
-update-desktop-database &> /dev/null || :
 
 %postun
-touch --no-create %{_datadir}/icons/hicolor
-touch --no-create %{_datadir}/pixmaps
+touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 if [ -x %{_bindir}/gtk-update-icon-cache ]; then
-  %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
+  %{_bindir}/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 fi
-update-desktop-database &> /dev/null || :
 
 %files
 %defattr (-,root,root,-)
@@ -87,11 +85,8 @@ update-desktop-database &> /dev/null || :
 %{_datadir}/applications/qipmsg.desktop
 %{_datadir}/pixmaps/qipmsg.png
 %{_datadir}/icons/hicolor/*/apps/qipmsg.png
-%{_datadir}/qipmsg/translations/qipmsg_zh_CN.qm
-%{_datadir}/qipmsg/sounds/*.wav
-%{_datadir}/qipmsg/icons/*.xpm
 %{_datadir}/qipmsg/
 
 %changelog
 * Mon Jul 22 2008 Yichi Zhang <zyichi@gmail.com>
-  - first spec file
+- first spec file
