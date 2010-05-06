@@ -31,7 +31,7 @@ Release:        %{release}%{dist}
 
 Source0:        %{name}-%{version}.tar.bz2
 
-Packager:       Yichi Zhang <zyichi@gmail.com>
+Packager:       Yichi Zhang <zyichi@gmail.com>, robinlee.sysu <robinlee.sysu@gmail.com>
 Distribution:   %{distr}
 BuildRoot:      %{_tmppath}/%{name}-buildroot
 Autoreqprov:    On
@@ -88,5 +88,9 @@ fi
 %{_datadir}/qipmsg/
 
 %changelog
+* Thu May 06 2010 robinlee.sysu <robinlee.sysu@gmail.com>
+- Add alsa-lib-devel to BuildRequires.
+- Lots of change to emit rpmbuild warning.
+
 * Mon Jul 22 2008 Yichi Zhang <zyichi@gmail.com>
 - first spec file
