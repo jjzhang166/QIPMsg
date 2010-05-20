@@ -44,8 +44,9 @@ ServeSocket::ServeSocket(int socketDescriptor, QObject *parent)
     : QObject(parent)
 {
     m_tcpSocket.setSocketDescriptor(socketDescriptor);
-
 #if 0
+    connect(&m_tcpSocket, SIGNAL(bytesWritten(qint64)),
+            this, SLOT(updateBytesWrited(qint64)));
     connect(&m_tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)),
             this, SLOT(socketError(QAbstractSocket::SocketError)));
 #endif
@@ -225,9 +226,13 @@ bool ServeSocket::tcpWriteBlock(QByteArray &block)
 {
     qint32 bytesToWrite = block.size();
     forever {
-        qint32 bytesWrited = m_tcpSocket.write(block);
+        qint32 n = m_tcpSocket.write(block);
+        if (n == -1) {
+            return false;
+        }
+#if 0
         forever {
-            if (!m_tcpSocket.waitForBytesWritten(1000)) {
+            if (!m_tcpSocket.waitForBytesWritten()) {
                 if (m_tcpSocket.state() == QAbstractSocket::ConnectedState) {
                     // XXX NOTE: a time out, can be occured if client stop
                     // transfer
@@ -240,17 +245,17 @@ bool ServeSocket::tcpWriteBlock(QByteArray &block)
             // bytes writted
             break;
         }
-
-        if (bytesWrited == -1) {
+#endif
+        if (!m_tcpSocket.waitForBytesWritten(-1)) {
+            m_errorString = m_tcpSocket.errorString();
             return false;
         }
-        bytesToWrite -= bytesWrited;
+        bytesToWrite -= n;
+        block.remove(0, n);
         if (bytesToWrite == 0) {
             break;
         }
-        block.remove(0, bytesWrited);
     }
-
     return true;
 }
 
@@ -372,5 +377,10 @@ QByteArray ServeSocket::constructFileSendBlock(QString filePath) const
 void ServeSocket::socketError(QAbstractSocket::SocketError errorCode)
 {
     qDebug() << errorCode << m_tcpSocket.errorString();
+}
+
+void ServeSocket::updateBytesWrited(qint64 n)
+{
+    ;
 }
 

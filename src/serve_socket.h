@@ -40,6 +40,7 @@ public:
 
 private slots:
     void socketError(QAbstractSocket::SocketError);
+    void updateBytesWrited(qint64);
 
 private:
     bool canParsePacket(const QByteArray &requestPacket) const;
