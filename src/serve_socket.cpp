@@ -24,6 +24,12 @@
 #include <QDir>
 #include <QDateTime>
 #include <QTextCodec>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <sys/types.h>
 
 #define REQUST_FILE_PACKET_ID_POSITION      5
 #define REQUST_FILE_FILE_ID_POSITION        6
@@ -43,7 +49,7 @@ struct RequsetFile
 ServeSocket::ServeSocket(int socketDescriptor, QObject *parent)
     : QObject(parent)
 {
-    m_tcpSocket.setSocketDescriptor(socketDescriptor);
+  m_sockfd = socketDescriptor;
 #if 0
     connect(&m_tcpSocket, SIGNAL(bytesWritten(qint64)),
             this, SLOT(updateBytesWrited(qint64)));
@@ -51,24 +57,56 @@ ServeSocket::ServeSocket(int socketDescriptor, QObject *parent)
             this, SLOT(socketError(QAbstractSocket::SocketError)));
 #endif
 }
+ServeSocket::~ServeSocket()
+{
+  close( m_sockfd );
+}
 
 bool ServeSocket::startSendFile()
 {
     qDebug() << "ServeSocket::startSendFile";
 
     QByteArray recvBlock;
-    forever {
-        if (!m_tcpSocket.waitForReadyRead(3000)) {
-            m_errorString = m_tcpSocket.errorString();
-            return false;
-        }
 
-        recvBlock.append(m_tcpSocket.read(m_tcpSocket.bytesAvailable()));
+    int     readlen = 0;
+    char    buff[8192];  //8192 is max buff
+    fd_set  r_set;
+    int     retval;
+    struct  timeval tv;
+    tv.tv_sec = 3;
 
-        if (canParsePacket(recvBlock)) {
-            break;
-        }
+    while ( 1 ) {
+      FD_ZERO( &r_set );
+      FD_SET( m_sockfd, &r_set );
+
+      retval = select(m_sockfd+1, &r_set, NULL, NULL, &tv);
+      if ( retval == -1 )
+        return false;
+
+      if ( FD_ISSET(m_sockfd, &r_set) ) {
+        readlen = read( m_sockfd, buff, 8192 );
+      }
+      buff[readlen] = '\0';
+
+      recvBlock.append( buff );
+
+      if (canParsePacket(recvBlock)) {
+        break;
+      }
     }
+
+//    forever {
+//        if (!m_tcpSocket.waitForReadyRead(3000)) {
+//            m_errorString = m_tcpSocket.errorString();
+//            return false;
+//        }
+//
+//        recvBlock.append(m_tcpSocket.read(m_tcpSocket.bytesAvailable()));
+//
+//        if (canParsePacket(recvBlock)) {
+//            break;
+//        }
+//    }
 
     return handleRequest(recvBlock);
 }
@@ -224,12 +262,35 @@ bool ServeSocket::tcpSendFile(QString filePath, qint64 offset)
 
 bool ServeSocket::tcpWriteBlock(QByteArray &block)
 {
-    qint32 bytesToWrite = block.size();
-    forever {
-        qint32 n = m_tcpSocket.write(block);
-        if (n == -1) {
-            return false;
-        }
+  size_t  nbytes = block.size();
+  char*   buff   = block.data();
+
+  size_t  sent = 0;
+  ssize_t n    = 0;
+  int     err  = 0;
+  while ( sent < nbytes ) {
+    n = send(m_sockfd, buff+sent, nbytes-sent, 0);
+    if ( n > 0 ) {
+      sent += n;
+    } else if ( n < 0 ) {
+      if ( errno == EINTR || errno == EAGAIN ) {
+        continue;
+      }
+      return false;
+    } else {
+      err++;
+      if ( err > 3 ) {
+        return false;
+      }
+    }
+  }
+  return true;
+//    qint32 bytesToWrite = block.size();
+//    forever {
+//        qint32 n = m_tcpSocket.write(block);
+//        if (n == -1) {
+//            return false;
+//        }
 #if 0
         forever {
             if (!m_tcpSocket.waitForBytesWritten()) {
@@ -246,17 +307,17 @@ bool ServeSocket::tcpWriteBlock(QByteArray &block)
             break;
         }
 #endif
-        if (!m_tcpSocket.waitForBytesWritten(-1)) {
-            m_errorString = m_tcpSocket.errorString();
-            return false;
-        }
-        bytesToWrite -= n;
-        block.remove(0, n);
-        if (bytesToWrite == 0) {
-            break;
-        }
-    }
-    return true;
+//        if (!m_tcpSocket.waitForBytesWritten(-1)) {
+//            m_errorString = m_tcpSocket.errorString();
+//            return false;
+//        }
+//        bytesToWrite -= n;
+//        block.remove(0, n);
+//        if (bytesToWrite == 0) {
+//            break;
+//        }
+//    }
+//    return true;
 }
 
 bool ServeSocket::tcpSendDir(QString filePath)
@@ -372,15 +433,5 @@ QByteArray ServeSocket::constructFileSendBlock(QString filePath) const
 
     QByteArray ba = Global::transferCodec->codec()->fromUnicode(s);
     return ba + block;
-}
-
-void ServeSocket::socketError(QAbstractSocket::SocketError errorCode)
-{
-    qDebug() << errorCode << m_tcpSocket.errorString();
-}
-
-void ServeSocket::updateBytesWrited(qint64 n)
-{
-    ;
 }
 

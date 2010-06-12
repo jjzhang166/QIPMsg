@@ -35,12 +35,9 @@ public:
     };
 
     ServeSocket(int socketDescriptor, QObject *parent = 0);
+    ~ServeSocket();
 
     bool startSendFile();
-
-private slots:
-    void socketError(QAbstractSocket::SocketError);
-    void updateBytesWrited(qint64);
 
 private:
     bool canParsePacket(const QByteArray &requestPacket) const;
@@ -54,7 +51,7 @@ private:
 
     QString m_errorString;
     QString m_packetNoString;
-    QTcpSocket m_tcpSocket;
+    int     m_sockfd;
 };
 
 #endif // !SERVE_SOCKET_H
