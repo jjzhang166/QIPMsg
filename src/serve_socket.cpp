@@ -34,6 +34,7 @@
 #define REQUST_FILE_PACKET_ID_POSITION      5
 #define REQUST_FILE_FILE_ID_POSITION        6
 #define REQUST_FILE_OFFSET_POSITION         7
+#define MAXBUFF                             8192
 
 #define BLOCK_SIZE                          1024*16
 
@@ -68,29 +69,19 @@ bool ServeSocket::startSendFile()
 
     QByteArray recvBlock;
 
-    int     readlen = 0;
-    char    buff[8192];  //8192 is max buff
-    fd_set  r_set;
-    int     retval;
-    struct  timeval tv;
-    tv.tv_sec = 3;
-
+    int  readlen = 0;
+    char buff[MAXBUFF];
     while ( 1 ) {
-      FD_ZERO( &r_set );
-      FD_SET( m_sockfd, &r_set );
-
-      retval = select(m_sockfd+1, &r_set, NULL, NULL, &tv);
-      if ( retval == -1 )
+      readlen = read( m_sockfd, buff, MAXBUFF-1 );
+      if ( errno == EINTR ) {
+        continue;
+      }
+      if ( readlen <= 0 ) {
         return false;
-
-      if ( FD_ISSET(m_sockfd, &r_set) ) {
-        readlen = read( m_sockfd, buff, 8192 );
       }
       buff[readlen] = '\0';
-
       recvBlock.append( buff );
-
-      if (canParsePacket(recvBlock)) {
+      if ( canParsePacket(recvBlock) ) {
         break;
       }
     }
@@ -267,21 +258,17 @@ bool ServeSocket::tcpWriteBlock(QByteArray &block)
 
   size_t  sent = 0;
   ssize_t n    = 0;
-  int     err  = 0;
   while ( sent < nbytes ) {
     n = send(m_sockfd, buff+sent, nbytes-sent, 0);
     if ( n > 0 ) {
       sent += n;
     } else if ( n < 0 ) {
-      if ( errno == EINTR || errno == EAGAIN ) {
+      if ( errno == EINTR ) {
         continue;
       }
       return false;
     } else {
-      err++;
-      if ( err > 3 ) {
-        return false;
-      }
+      return false;
     }
   }
   return true;
