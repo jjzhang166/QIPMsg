@@ -39,7 +39,7 @@ void Preferences::reset()
 {
     userName = "";
     groupName = "";
-    isSealed = true;
+    isSealed = false;
     isNoAutoPopupMsg = false;
     isQuoteMsg = true;
     isReadCheck = true;

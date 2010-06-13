@@ -278,22 +278,6 @@ bool ServeSocket::tcpWriteBlock(QByteArray &block)
 //        if (n == -1) {
 //            return false;
 //        }
-#if 0
-        forever {
-            if (!m_tcpSocket.waitForBytesWritten()) {
-                if (m_tcpSocket.state() == QAbstractSocket::ConnectedState) {
-                    // XXX NOTE: a time out, can be occured if client stop
-                    // transfer
-                    continue;
-                }
-                m_errorString = m_tcpSocket.errorString();
-                return false;
-            }
-
-            // bytes writted
-            break;
-        }
-#endif
 //        if (!m_tcpSocket.waitForBytesWritten(-1)) {
 //            m_errorString = m_tcpSocket.errorString();
 //            return false;
