@@ -1,3 +1,6 @@
+Changes for 1.0.1:
+ * License unify.
+
 Changes for 1.0.0:
  * Message default not sealed.
  * Fix send file bug.

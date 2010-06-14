@@ -31,7 +31,7 @@ AboutDialog::AboutDialog(QWidget *parent)
 {
     tabWidget = new QTabWidget;
     tabWidget->addTab(new InfoTab(), tr("Information"));
-    tabWidget->addTab(new ContributorTab(), tr("Contrubutors"));
+    tabWidget->addTab(new ContributorTab(), tr("Contributors"));
     tabWidget->addTab(new TranslatorTab(), tr("Translators"));
     tabWidget->addTab(new LicenseTab(), tr("License"));
 
@@ -119,7 +119,11 @@ QString ContributorTab::getContributor() const
         + "</ul>"
         + "<ul>"
         + contr("robinlee.sysu &lt;robinlee.sysu@gmail.com&gt;", tr("Packager"))
-        + "</ul>";
+        + "</ul>"
+        + "<ul>"
+        + contr("Daijun Cao &lt;huabo2008@gmail.com&gt;", tr("Send file bug fix"))
+        + "</ul>"
+        ;
 }
 
 TranslatorTab::TranslatorTab(QWidget *parent)
