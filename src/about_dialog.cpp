@@ -123,6 +123,9 @@ QString ContributorTab::getContributor() const
         + "<ul>"
         + contr("Daijun Cao &lt;huabo2008@gmail.com&gt;", tr("Send file bug fix"))
         + "</ul>"
+        + "<ul>"
+        + contr("Cheng Wang &lt;cn.veking@gmail.com&gt;", tr("Packager"))
+        + "</ul>"
         ;
 }
 
