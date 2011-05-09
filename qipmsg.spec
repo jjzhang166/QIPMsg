@@ -1,6 +1,6 @@
 %define name    qipmsg
-%define version 1.0.0
-%define dist .fc13
+%define version 1.0.1
+%define dist .fc15
 %define release 1
 
 %define is_mandrake %(test -e /etc/mandrake-release && echo 1 || echo 0)
