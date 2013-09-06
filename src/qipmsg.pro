@@ -3,10 +3,9 @@ TEMPLATE = app
 CONFIG += qt warn_on release
 
 QT += network
-LIBS += -lasound
 
 RESOURCES = icons.qrc
-
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 HEADERS += \
 	about_dialog.h \

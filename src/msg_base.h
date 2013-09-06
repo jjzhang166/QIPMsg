@@ -60,8 +60,8 @@ public:
     // We set all these methods to empty
     // XXX NOTE: only send msg use these functions
     virtual void setState(States state) {}
-    virtual MsgBase::States state() const {}
-    virtual int sendTimes() const {}
+    virtual MsgBase::States state() const { return MsgBase::NotSend; }
+    virtual int sendTimes() const { return 0; }
     virtual void incrementSendTimes() {}
 
 private:

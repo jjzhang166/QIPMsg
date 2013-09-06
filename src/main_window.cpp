@@ -14,11 +14,27 @@
 // along with QIpMsg.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <QtGui>
+#include <QMainWindow>
 #include <QtCore>
 #include <QModelIndex>
 #include <QHostAddress>
 #include <QStringList>
+#include <QTableView>
+#include <QTextEdit>
+#include <QShortcut>
+#include <QSplitter>
+#include <QPushButton>
+#include <QAction>
+#include <QHeaderView>
+#include <QGridLayout>
+#include <QLabel>
+#include <QCheckBox>
+#include <QBoxLayout>
+#include <QContextMenuEvent>
+#include <QMenu>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QScrollBar>
 
 #include "main_window.h"
 #include "user_manager.h"
@@ -33,6 +49,7 @@
 #include "preferences.h"
 #include "dir_dialog.h"
 #include "send_file_manager.h"
+#include <QFileDialog>
 
 quint32 MainWindow::m_levelOneCount = 0;
 quint32 MainWindow::m_levelTwoCount = 0;

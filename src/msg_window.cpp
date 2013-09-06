@@ -14,7 +14,7 @@
 // along with QIpMsg.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <QtGui>
+#include <QPushButton>
 #include <QtCore>
 #include <QtDebug>
 #include <QtGlobal>
@@ -35,6 +35,7 @@
 #include "recv_file_finish_dialog.h"
 #include "retry_recv_file_dialog.h"
 #include "send_msg.h"
+#include <QTextEdit>
 
 
 MsgWindow::MsgWindow(Msg msg, QWidget *parent)

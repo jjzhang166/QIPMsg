@@ -27,6 +27,7 @@
 
 #include <QPoint>
 #include <QSize>
+#include <QSound>
 
 WindowManager::WindowManager(QObject *parent)
     : QObject(parent)
@@ -67,7 +68,7 @@ void WindowManager::createMsgWindow(Msg msg)
             Global::soundThread->play(soundFile);
 #else // !Q_OS_LINUX
             if (QSound::isAvailable()) {
-                QSound::play();
+                QSound::play(soundFile);
             }
 #endif
         }

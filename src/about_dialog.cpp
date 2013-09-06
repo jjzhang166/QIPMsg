@@ -19,8 +19,12 @@
 #include "version.h"
 #include "global.h"
 
-#include <QtCore>
-#include <QtGui>
+#include <QApplication>
+#include <QTabWidget>
+#include <QDialogButtonBox>
+#include <QVBoxLayout>
+#include <QDesktopWidget>
+#include <QTextBrowser>
 
 static QString contr(const QString &author, const QString &thing);
 static QString trad(const QString &lang, const QString &author);

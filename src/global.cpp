@@ -16,7 +16,8 @@
 
 #include <QSettings>
 #include <QIcon>
-#include <QtGui>
+#include <QApplication>
+#include <QDesktopWidget>
 
 #include "global.h"
 #include "helper.h"

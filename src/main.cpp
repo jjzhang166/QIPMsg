@@ -14,10 +14,16 @@
 // along with QIpMsg.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <QtCore>
-#include <QtGui>
+#include <QtGlobal>
+#include <QApplication>
+#include <QThread>
+#include <QTime>
+#include <QDir>
+#include <QMessageBox>
 
+#ifndef Q_OS_WIN
 #include <unistd.h>     // For usleep()
+#endif
 
 #include "qipmsg.h"
 #include "helper.h"
@@ -76,10 +82,9 @@ int main(int argc, char *argv[])
     checkTcpServerError();
 
     Global::msgThread->start();
+
     // this make sure thead started
-    while (!Global::msgThread->isRunning()) {
-        usleep(200000);
-    }
+    Global::msgThread->wait(200000);
 
     Global::userManager->broadcastEntry();
 

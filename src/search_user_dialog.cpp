@@ -18,8 +18,12 @@
 #include "global.h"
 #include "preferences.h"
 
-#include <QtGui>
+#include <QCompleter>
 #include <QtCore>
+#include <QGridLayout>
+#include <QComboBox>
+#include <QPushButton>
+#include <QCheckBox>
 
 #define USER_SEARCH_HISTORY_COUNT   50
 

@@ -19,8 +19,15 @@
 #include "preferences.h"
 #include "send_file_model.h"
 
-#include <QtGui>
-#include <QtCore>
+#include <QDirModel>
+#include <QTreeView>
+#include <QHeaderView>
+#include <QLabel>
+#include <QScrollBar>
+#include <QVBoxLayout>
+#include <QPushButton>
+#include <QBoxLayout>
+#include <QGroupBox>
 
 DirDialog::DirDialog(SendFileModel *sendFileModel, QWidget *parent)
     : QDialog(parent), m_sendFileModel(sendFileModel)

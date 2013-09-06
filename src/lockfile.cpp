@@ -18,8 +18,10 @@
 
 #include <QFile>
 
+#ifndef Q_OS_WIN
 #include <fcntl.h>
 #include <unistd.h>
+#endif
 
 Q_GLOBAL_STATIC(LockFile, lockFile);
 
