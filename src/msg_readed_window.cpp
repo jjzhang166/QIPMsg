@@ -19,9 +19,10 @@
 #include "window_manager.h"
 
 #include <QtCore>
-#include <QtGui>
+#include <QPushButton>
 #include <QVBoxLayout>
 #include <QLabel>
+#include <QCloseEvent>
 
 MsgReadedWindow::MsgReadedWindow(QString nickName)
 {

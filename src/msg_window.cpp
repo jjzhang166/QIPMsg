@@ -18,7 +18,9 @@
 #include <QtCore>
 #include <QtDebug>
 #include <QtGlobal>
-
+#include <QVBoxLayout>
+#include <QTextEdit>
+#include <QGroupBox>
 
 #include "msg_window.h"
 #include "owner.h"
@@ -35,8 +37,6 @@
 #include "recv_file_finish_dialog.h"
 #include "retry_recv_file_dialog.h"
 #include "send_msg.h"
-#include <QTextEdit>
-
 
 MsgWindow::MsgWindow(Msg msg, QWidget *parent)
     : QWidget(parent), m_msg(msg), isCancelTransferCalled(false)

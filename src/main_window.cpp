@@ -35,6 +35,8 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QScrollBar>
+#include <QFileDialog>
+#include <QTreeView>
 
 #include "main_window.h"
 #include "user_manager.h"
@@ -49,7 +51,7 @@
 #include "preferences.h"
 #include "dir_dialog.h"
 #include "send_file_manager.h"
-#include <QFileDialog>
+
 
 quint32 MainWindow::m_levelOneCount = 0;
 quint32 MainWindow::m_levelTwoCount = 0;
