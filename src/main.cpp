@@ -20,6 +20,7 @@
 #include <QTime>
 #include <QDir>
 #include <QMessageBox>
+#include <QString>
 
 #ifndef Q_OS_WIN
 #include <unistd.h>     // For usleep()
@@ -38,12 +39,13 @@
 #include "constants.h"
 
 static void createHomeDirectory();
-static void myMessageOutput(QtMsgType type, const char *msg);
+//static void myMessageOutput(QtMsgType type, const char *msg);
+static void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 static void checkTcpServerError();
 
 int main(int argc, char *argv[])
 {
-//    qInstallMessageHandler(myMessageOutput);
+    qInstallMessageHandler(myMessageOutput);
     QApplication app(argc, argv);
 
     qRegisterMetaType<Msg>("Msg");
@@ -83,7 +85,7 @@ int main(int argc, char *argv[])
     Global::msgThread->start();
 
     // this make sure thead started
-    Global::msgThread->wait(200000);
+    Global::msgThread->wait(1*1000);
 
     Global::userManager->broadcastEntry();
 
@@ -109,9 +111,9 @@ static void createHomeDirectory()
     }
 }
 
-static void myMessageOutput(QtMsgType type, const char *msg) {
-    QString line = "[" + QTime::currentTime().toString() + "] " +
-        QString::fromUtf8(msg);
+static void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    QString line = "[" + QTime::currentTime().toString() + "] " + /*QString::fromUtf8(*/msg/*)*/;
 
     switch (type) {
         case QtDebugMsg:

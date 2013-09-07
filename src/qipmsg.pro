@@ -4,6 +4,8 @@ CONFIG += qt warn_on release
 
 QT += network multimedia
 
+CONFIG-=app_bundle
+
 RESOURCES = icons.qrc
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
