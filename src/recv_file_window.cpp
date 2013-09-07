@@ -14,8 +14,13 @@
 // along with QIpMsg.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QVBoxLayout>
 #include <QtCore>
-#include <QtGui>
+#include <QTableView>
+#include <QPushButton>
+#include <QMessageBox>
+#include <QFileDialog>
+#include <QHeaderView>
 
 #include "recv_file_window.h"
 #include "constants.h"
@@ -171,7 +176,7 @@ void RecvFileWindow::createRecvFileView()
 
     recvFileView->setSortingEnabled(false);
     recvFileView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    recvFileView->horizontalHeader()->setMovable(false);
+//    recvFileView->horizontalHeader()->setMovable(false);
     recvFileView->verticalHeader()->hide();
     recvFileView->setSelectionBehavior(QAbstractItemView::SelectRows);
     recvFileView->setTabKeyNavigation(false);

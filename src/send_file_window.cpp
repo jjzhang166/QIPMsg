@@ -14,8 +14,13 @@
 // along with QIpMsg.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <QVBoxLayout>
 #include <QtCore>
-#include <QtGui>
+#include <QTableView>
+#include <QHeaderView>
+#include <QPushButton>
+#include <QCloseEvent>
+#include <QFileDialog>
 
 #include "send_file_window.h"
 #include "dir_dialog.h"
@@ -59,7 +64,7 @@ void SendFileWindow::createSendFileView(SendFileModel *sendFileModel)
 
     sendFileView->setSortingEnabled(false);
     sendFileView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    sendFileView->horizontalHeader()->setMovable(false);
+//    sendFileView->horizontalHeader()->setMovable(false);
     sendFileView->verticalHeader()->hide();
     sendFileView->setSelectionBehavior(QAbstractItemView::SelectRows);
     sendFileView->setTabKeyNavigation(false);

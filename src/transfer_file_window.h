@@ -19,6 +19,12 @@
 
 #include <QWidget>
 #include <QTableWidget>
+#include <QVBoxLayout>
+#include <QSortFilterProxyModel>
+#include <QStandardItemModel>
+#include <QHeaderView>
+#include <QPushButton>
+#include <QCheckBox>
 
 class TransferFileModel;
 class QSortFilterProxyModel;

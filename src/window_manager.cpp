@@ -67,9 +67,7 @@ void WindowManager::createMsgWindow(Msg msg)
 #ifdef Q_OS_LINUX
             Global::soundThread->play(soundFile);
 #else // !Q_OS_LINUX
-            if (QSound::isAvailable()) {
-                QSound::play(soundFile);
-            }
+            QSound::play(soundFile);
 #endif
         }
 

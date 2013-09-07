@@ -23,7 +23,6 @@
 #include "constants.h"
 
 #include <QtCore>
-#include <QtGui>
 
 TransferFileWindow::TransferFileWindow(QWidget *parent)
     : QWidget(parent)
@@ -61,7 +60,7 @@ void TransferFileWindow::createTransferFileView()
 
     transferFileView->setSortingEnabled(false);
     transferFileView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    transferFileView->horizontalHeader()->setMovable(false);
+//    transferFileView->horizontalHeader()->setMovable(false);
     transferFileView->verticalHeader()->hide();
     transferFileView->setSelectionBehavior(QAbstractItemView::SelectRows);
     transferFileView->setTabKeyNavigation(false);

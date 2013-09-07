@@ -2,7 +2,7 @@ TEMPLATE = app
 
 CONFIG += qt warn_on release
 
-QT += network
+QT += network multimedia
 
 RESOURCES = icons.qrc
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets

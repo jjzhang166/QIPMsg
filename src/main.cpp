@@ -43,9 +43,8 @@ static void checkTcpServerError();
 
 int main(int argc, char *argv[])
 {
+//    qInstallMessageHandler(myMessageOutput);
     QApplication app(argc, argv);
-
-    qInstallMsgHandler(myMessageOutput);
 
     qRegisterMetaType<Msg>("Msg");
     qRegisterMetaType<QAbstractSocket::SocketError>("QAbstractSocket::SocketError");

@@ -20,8 +20,20 @@
 #include "user_manager.h"
 #include "transfer_codec.h"
 
-#include <QtGui>
 #include <QtCore>
+#include <QCheckBox>
+#include <QGridLayout>
+#include <QPushButton>
+#include <QLabel>
+#include <QComboBox>
+#include <QFileDialog>
+#include <QLineEdit>
+#include <QDialogButtonBox>
+#include <QGroupBox>
+#include <QApplication>
+#include <QDesktopWidget>
+#include <QCompleter>
+#include <QListWidget>
 
 DetailTab::DetailTab(QWidget *parent)
     : QWidget(parent)

@@ -14,8 +14,12 @@
 // along with QIpMsg.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <QtGui>
+#include <QGroupBox>
 #include <QtCore>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QPushButton>
+#include <QCloseEvent>
 
 #include "retry_recv_file_dialog.h"
 #include "constants.h"

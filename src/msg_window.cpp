@@ -21,6 +21,10 @@
 #include <QVBoxLayout>
 #include <QTextEdit>
 #include <QGroupBox>
+#include <QCheckBox>
+#include <QLabel>
+#include <QCloseEvent>
+#include <QMessageBox>
 
 #include "msg_window.h"
 #include "owner.h"
