@@ -27,9 +27,6 @@
 #include <QDir>
 #include <QTextCodec>
 
-#include <sys/types.h>
-#include <utime.h>
-
 struct TransferFile
 {
     QString name;
@@ -174,11 +171,11 @@ void RecvFileTransfer::setLastModified(QString path, QString secondString)
         bool ok;
         quint64 secs = secondString.toULongLong(&ok, 16);
         if (ok) {
-            struct utimbuf buf;
-            // XXX NOTE: we set both access time and modify time to modify time
-            buf.actime = secs;
-            buf.modtime = secs;
-            utime(path.toLocal8Bit(), &buf);
+//            struct utimbuf buf;
+//            // XXX NOTE: we set both access time and modify time to modify time
+//            buf.actime = secs;
+//            buf.modtime = secs;
+//            utime(path.toLocal8Bit(), &buf);
         }
     }
 }
@@ -191,11 +188,11 @@ void RecvFileTransfer::setLastModified(RecvFileHandle h)
         bool ok;
         quint64 secs = s.toULongLong(&ok, 16);
         if (ok) {
-            struct utimbuf buf;
-            // XXX NOTE: we set both access time and modify time to modify time
-            buf.actime = secs;
-            buf.modtime = secs;
-            utime(path.toLocal8Bit(), &buf);
+//            struct utimbuf buf;
+//            // XXX NOTE: we set both access time and modify time to modify time
+//            buf.actime = secs;
+//            buf.modtime = secs;
+//            utime(path.toLocal8Bit(), &buf);
         }
     }
 }

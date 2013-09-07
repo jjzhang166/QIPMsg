@@ -24,12 +24,6 @@
 #include <QDir>
 #include <QDateTime>
 #include <QTextCodec>
-#include <unistd.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <sys/socket.h>
-#include <sys/time.h>
-#include <sys/types.h>
 
 #define REQUST_FILE_PACKET_ID_POSITION      5
 #define REQUST_FILE_FILE_ID_POSITION        6
@@ -60,7 +54,8 @@ ServeSocket::ServeSocket(int socketDescriptor, QObject *parent)
 }
 ServeSocket::~ServeSocket()
 {
-  close( m_sockfd );
+//  close( m_sockfd );
+    m_tcpSocket.close();
 }
 
 bool ServeSocket::startSendFile()
@@ -69,6 +64,7 @@ bool ServeSocket::startSendFile()
 
     QByteArray recvBlock;
 
+#if 0
     int  readlen = 0;
     char buff[MAXBUFF];
     while ( 1 ) {
@@ -85,20 +81,20 @@ bool ServeSocket::startSendFile()
         break;
       }
     }
+#else
+    forever {
+        if (!m_tcpSocket.waitForReadyRead(3000)) {
+            m_errorString = m_tcpSocket.errorString();
+            return false;
+        }
 
-//    forever {
-//        if (!m_tcpSocket.waitForReadyRead(3000)) {
-//            m_errorString = m_tcpSocket.errorString();
-//            return false;
-//        }
-//
-//        recvBlock.append(m_tcpSocket.read(m_tcpSocket.bytesAvailable()));
-//
-//        if (canParsePacket(recvBlock)) {
-//            break;
-//        }
-//    }
+        recvBlock.append(m_tcpSocket.read(m_tcpSocket.bytesAvailable()));
 
+        if (canParsePacket(recvBlock)) {
+            break;
+        }
+    }
+#endif
     return handleRequest(recvBlock);
 }
 
@@ -253,12 +249,13 @@ bool ServeSocket::tcpSendFile(QString filePath, qint64 offset)
 
 bool ServeSocket::tcpWriteBlock(QByteArray &block)
 {
-  size_t  nbytes = block.size();
-  char*   buff   = block.data();
+#if 0
+    size_t  nbytes = block.size();
+    char*   buff   = block.data();
 
-  size_t  sent = 0;
-  ssize_t n    = 0;
-  while ( sent < nbytes ) {
+    size_t  sent = 0;
+    ssize_t n    = 0;
+    while ( sent < nbytes ) {
     n = send(m_sockfd, buff+sent, nbytes-sent, 0);
     if ( n > 0 ) {
       sent += n;
@@ -270,25 +267,27 @@ bool ServeSocket::tcpWriteBlock(QByteArray &block)
     } else {
       return false;
     }
-  }
-  return true;
-//    qint32 bytesToWrite = block.size();
-//    forever {
-//        qint32 n = m_tcpSocket.write(block);
-//        if (n == -1) {
-//            return false;
-//        }
-//        if (!m_tcpSocket.waitForBytesWritten(-1)) {
-//            m_errorString = m_tcpSocket.errorString();
-//            return false;
-//        }
-//        bytesToWrite -= n;
-//        block.remove(0, n);
-//        if (bytesToWrite == 0) {
-//            break;
-//        }
-//    }
-//    return true;
+    }
+    return true;
+#else
+    qint32 bytesToWrite = block.size();
+    forever {
+        qint32 n = m_tcpSocket.write(block);
+        if (n == -1) {
+            return false;
+        }
+        if (!m_tcpSocket.waitForBytesWritten(-1)) {
+            m_errorString = m_tcpSocket.errorString();
+            return false;
+        }
+        bytesToWrite -= n;
+        block.remove(0, n);
+        if (bytesToWrite == 0) {
+            break;
+        }
+    }
+    return true;
+#endif
 }
 
 bool ServeSocket::tcpSendDir(QString filePath)

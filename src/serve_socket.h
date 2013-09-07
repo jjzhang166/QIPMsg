@@ -26,7 +26,7 @@ struct RequsetFile;
 
 class ServeSocket : public QObject
 {
-    Q_OBJECT;
+Q_OBJECT
 
 public:
     enum DirBlockModes {
@@ -52,6 +52,8 @@ private:
     QString m_errorString;
     QString m_packetNoString;
     int     m_sockfd;
+
+    QTcpSocket m_tcpSocket;
 };
 
 #endif // !SERVE_SOCKET_H

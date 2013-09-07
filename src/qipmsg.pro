@@ -1,10 +1,13 @@
 TEMPLATE = app
 
-CONFIG += qt warn_on release
+CONFIG += qt warn_on
+#release
 
 QT += network multimedia
 
-CONFIG-=app_bundle
+macx {
+    CONFIG-=app_bundle
+}
 
 RESOURCES = icons.qrc
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -19,7 +22,6 @@ HEADERS += \
 	global.h \
 	helper.h \
 	ipmsg.h \
-	lockfile.h \
 	main_window.h \
         search_user_dialog.h \
         msg.h \
@@ -69,7 +71,6 @@ SOURCES += \
 	recv_file_finish_dialog.cpp \
 	global.cpp \
 	helper.cpp \
-	lockfile.cpp \
 	main.cpp \
 	main_window.cpp \
         search_user_dialog.cpp \

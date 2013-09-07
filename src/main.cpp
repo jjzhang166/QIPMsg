@@ -21,16 +21,12 @@
 #include <QDir>
 #include <QMessageBox>
 #include <QString>
-
-#ifndef Q_OS_WIN
-#include <unistd.h>     // For usleep()
-#endif
+#include <QLockFile>
 
 #include "qipmsg.h"
 #include "helper.h"
 #include "global.h"
 #include "translator.h"
-#include "lockfile.h"
 #include "file_server.h"
 #include "msg_thread.h"
 #include "send_msg.h"
@@ -61,10 +57,20 @@ int main(int argc, char *argv[])
     Helper::setInternalLogFileName(fileName);
 
     // Make sure there is only one instance running.
-    LockFile::instance()->setLockFile(Helper::lockFile());
-    if (!LockFile::instance()->lock()) {
-        qWarning("main: lock '%s' failed, exit.",
-                 Helper::lockFile().toUtf8().data());
+    QLockFile lockfile(Helper::lockFile());
+    lockfile.setStaleLockTime(0);
+    if (lockfile.tryLock(1000)) {
+
+    } else {
+//    if (!lockfile.lock()) {
+        qint64 pid;
+        QString hostname;
+        QString appname;
+        lockfile.getLockInfo(&pid, &hostname, &appname);
+        qWarning("main: lock '%s' failed, exit. Pls check %lld, %s, %s",
+                 Helper::lockFile().toUtf8().data()
+                 , pid, hostname.toUtf8().data()
+                 , appname.toUtf8().data());
         return -1;
     }
 
@@ -82,10 +88,14 @@ int main(int argc, char *argv[])
 
     checkTcpServerError();
 
-    Global::msgThread->start();
+//    Global::msgThread->start();
+    Global::msgThread->run();
 
     // this make sure thead started
-    Global::msgThread->wait(1*1000);
+    if (!Global::msgThread->wait(1*1000)) {
+        qWarning("main: thread can't start");
+        return 1;
+    }
 
     Global::userManager->broadcastEntry();
 
@@ -96,6 +106,7 @@ int main(int argc, char *argv[])
 
     delete qipmsg;
 
+//    lockfile.unlock();
     return rc;
 }
 
